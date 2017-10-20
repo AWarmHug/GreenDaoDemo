@@ -3,8 +3,9 @@ package com.warm.greendaodemo;
 import android.app.Application;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.warm.greendaodemo.dao.entity.DaoMaster;
-import com.warm.greendaodemo.dao.entity.DaoSession;
+import com.warm.greendaodemo.dao.gen.DaoMaster;
+import com.warm.greendaodemo.dao.gen.DaoSession;
+
 
 /**
  * 作者: 51hs_android
