@@ -1,15 +1,8 @@
 package com.warm.greendaodemo.dao.entity;
 
-import com.warm.greendaodemo.dao.gen.DaoSession;
-import com.warm.greendaodemo.dao.gen.ScoreDao;
-import com.warm.greendaodemo.dao.gen.StudentDao;
-
-import org.greenrobot.greendao.DaoException;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
-import org.greenrobot.greendao.annotation.NotNull;
-import org.greenrobot.greendao.annotation.ToOne;
 
 /**
  * 作者: 51hs_android
@@ -18,44 +11,37 @@ import org.greenrobot.greendao.annotation.ToOne;
  */
 @Entity
 public class Student {
-    @Id
-    long id;
+    @Id(autoincrement = true)
+    private Long id;
 
-    String name;
+    private String name;
 
-    long teacherId;
+    private Long teacherId;
+
+    private Integer age;
+
+    private String address;
 
 
-    @ToOne(joinProperty = "id")
-    Score score;
-
-    /** Used to resolve relations */
-    @Generated(hash = 2040040024)
-    private transient DaoSession daoSession;
-
-    /** Used for active entity operations. */
-    @Generated(hash = 1943931642)
-    private transient StudentDao myDao;
-
-    @Generated(hash = 1752064941)
-    private transient Long score__resolvedKey;
-
-    @Generated(hash = 752529600)
-    public Student(long id, String name, long teacherId) {
+    @Generated(hash = 2120073720)
+    public Student(Long id, String name, Long teacherId, Integer age,
+            String address) {
         this.id = id;
         this.name = name;
         this.teacherId = teacherId;
+        this.age = age;
+        this.address = address;
     }
 
     @Generated(hash = 1556870573)
     public Student() {
     }
 
-    public long getId() {
+    public Long getId() {
         return this.id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -67,89 +53,32 @@ public class Student {
         this.name = name;
     }
 
-    public long getTeacherId() {
+    public Long getTeacherId() {
         return this.teacherId;
     }
 
-    public void setTeacherId(long teacherId) {
+    public void setTeacherId(Long teacherId) {
         this.teacherId = teacherId;
     }
 
-    /** To-one relationship, resolved on first access. */
-    @Generated(hash = 307814219)
-    public Score getScore() {
-        long __key = this.id;
-        if (score__resolvedKey == null || !score__resolvedKey.equals(__key)) {
-            final DaoSession daoSession = this.daoSession;
-            if (daoSession == null) {
-                throw new DaoException("Entity is detached from DAO context");
-            }
-            ScoreDao targetDao = daoSession.getScoreDao();
-            Score scoreNew = targetDao.load(__key);
-            synchronized (this) {
-                score = scoreNew;
-                score__resolvedKey = __key;
-            }
-        }
-        return score;
+    public Integer getAge() {
+        return this.age;
     }
 
-    /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 1375786680)
-    public void setScore(@NotNull Score score) {
-        if (score == null) {
-            throw new DaoException(
-                    "To-one property 'id' has not-null constraint; cannot set to-one to null");
-        }
-        synchronized (this) {
-            this.score = score;
-            id = score.getId();
-            score__resolvedKey = id;
-        }
+    public void setAge(Integer age) {
+        this.age = age;
     }
 
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 128553479)
-    public void delete() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.delete(this);
+    public String getAddress() {
+        return this.address;
     }
 
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 1942392019)
-    public void refresh() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.refresh(this);
+    public void setAddress(String address) {
+        this.address = address;
     }
 
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#update(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 713229351)
-    public void update() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.update(this);
-    }
 
-    /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 1701634981)
-    public void __setDaoSession(DaoSession daoSession) {
-        this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getStudentDao() : null;
-    }
+
 
 
 }

@@ -24,11 +24,12 @@ public class TeacherDao extends AbstractDao<Teacher, Long> {
      * Can be used for QueryBuilder and for referencing column names.
      */
     public static class Properties {
-        public final static Property Id = new Property(0, long.class, "id", true, "_id");
+        public final static Property Id = new Property(0, Long.class, "id", true, "_id");
         public final static Property Name = new Property(1, String.class, "name", false, "NAME");
+        public final static Property Age = new Property(2, int.class, "age", false, "AGE");
+        public final static Property Sex = new Property(3, Integer.class, "sex", false, "SEX");
+        public final static Property TeachAge = new Property(4, Integer.class, "teachAge", false, "TEACH_AGE");
     }
-
-    private DaoSession daoSession;
 
 
     public TeacherDao(DaoConfig config) {
@@ -37,15 +38,17 @@ public class TeacherDao extends AbstractDao<Teacher, Long> {
     
     public TeacherDao(DaoConfig config, DaoSession daoSession) {
         super(config, daoSession);
-        this.daoSession = daoSession;
     }
 
     /** Creates the underlying database table. */
     public static void createTable(Database db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"TEACHER\" (" + //
-                "\"_id\" INTEGER PRIMARY KEY NOT NULL ," + // 0: id
-                "\"NAME\" TEXT);"); // 1: name
+                "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
+                "\"NAME\" TEXT," + // 1: name
+                "\"AGE\" INTEGER NOT NULL ," + // 2: age
+                "\"SEX\" INTEGER," + // 3: sex
+                "\"TEACH_AGE\" INTEGER);"); // 4: teachAge
     }
 
     /** Drops the underlying database table. */
@@ -57,49 +60,79 @@ public class TeacherDao extends AbstractDao<Teacher, Long> {
     @Override
     protected final void bindValues(DatabaseStatement stmt, Teacher entity) {
         stmt.clearBindings();
-        stmt.bindLong(1, entity.getId());
+ 
+        Long id = entity.getId();
+        if (id != null) {
+            stmt.bindLong(1, id);
+        }
  
         String name = entity.getName();
         if (name != null) {
             stmt.bindString(2, name);
+        }
+        stmt.bindLong(3, entity.getAge());
+ 
+        Integer sex = entity.getSex();
+        if (sex != null) {
+            stmt.bindLong(4, sex);
+        }
+ 
+        Integer teachAge = entity.getTeachAge();
+        if (teachAge != null) {
+            stmt.bindLong(5, teachAge);
         }
     }
 
     @Override
     protected final void bindValues(SQLiteStatement stmt, Teacher entity) {
         stmt.clearBindings();
-        stmt.bindLong(1, entity.getId());
+ 
+        Long id = entity.getId();
+        if (id != null) {
+            stmt.bindLong(1, id);
+        }
  
         String name = entity.getName();
         if (name != null) {
             stmt.bindString(2, name);
         }
-    }
-
-    @Override
-    protected final void attachEntity(Teacher entity) {
-        super.attachEntity(entity);
-        entity.__setDaoSession(daoSession);
+        stmt.bindLong(3, entity.getAge());
+ 
+        Integer sex = entity.getSex();
+        if (sex != null) {
+            stmt.bindLong(4, sex);
+        }
+ 
+        Integer teachAge = entity.getTeachAge();
+        if (teachAge != null) {
+            stmt.bindLong(5, teachAge);
+        }
     }
 
     @Override
     public Long readKey(Cursor cursor, int offset) {
-        return cursor.getLong(offset + 0);
+        return cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0);
     }    
 
     @Override
     public Teacher readEntity(Cursor cursor, int offset) {
         Teacher entity = new Teacher( //
-            cursor.getLong(offset + 0), // id
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1) // name
+            cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // name
+            cursor.getInt(offset + 2), // age
+            cursor.isNull(offset + 3) ? null : cursor.getInt(offset + 3), // sex
+            cursor.isNull(offset + 4) ? null : cursor.getInt(offset + 4) // teachAge
         );
         return entity;
     }
      
     @Override
     public void readEntity(Cursor cursor, Teacher entity, int offset) {
-        entity.setId(cursor.getLong(offset + 0));
+        entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setName(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setAge(cursor.getInt(offset + 2));
+        entity.setSex(cursor.isNull(offset + 3) ? null : cursor.getInt(offset + 3));
+        entity.setTeachAge(cursor.isNull(offset + 4) ? null : cursor.getInt(offset + 4));
      }
     
     @Override
@@ -119,7 +152,7 @@ public class TeacherDao extends AbstractDao<Teacher, Long> {
 
     @Override
     public boolean hasKey(Teacher entity) {
-        throw new UnsupportedOperationException("Unsupported for entities with a non-null key");
+        return entity.getId() != null;
     }
 
     @Override

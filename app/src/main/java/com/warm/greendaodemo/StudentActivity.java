@@ -8,7 +8,9 @@ import android.widget.Toast;
 
 import com.warm.greendaodemo.adapter.BaseAdapter;
 import com.warm.greendaodemo.adapter.StudentAdapter;
+import com.warm.greendaodemo.dao.entity.Score;
 import com.warm.greendaodemo.dao.entity.Student;
+import com.warm.greendaodemo.dao.gen.ScoreDao;
 import com.warm.greendaodemo.dao.gen.StudentDao;
 
 import java.util.ArrayList;
@@ -30,20 +32,19 @@ public class StudentActivity extends AppCompatActivity {
 
     private long teacherId;
 
-    private  StudentAdapter mAdapter;
+    private StudentAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student);
         ButterKnife.bind(this);
-        teacherId=getIntent().getLongExtra("teacherId",0);
-        mAdapter =new StudentAdapter(new ArrayList<Student>());
+        teacherId = getIntent().getLongExtra("teacherId", 0);
+        mAdapter = new StudentAdapter(new ArrayList<Student>());
         mAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener<Student>() {
             @Override
             public void itemClick(int position, Student student) {
-                Toast.makeText(StudentActivity.this, "成绩为"+student.getScore().toString(), Toast.LENGTH_SHORT).show();
-
+                queryScore(student.getId());
             }
 
             @Override
@@ -52,14 +53,14 @@ public class StudentActivity extends AppCompatActivity {
             }
         });
         recy.setAdapter(mAdapter);
-        recy.setLayoutManager(new GridLayoutManager(StudentActivity.this,2));
+        recy.setLayoutManager(new GridLayoutManager(StudentActivity.this, 2));
         refresh();
 
     }
 
-    private void refresh(){
+    private void refresh() {
 
-        Observable.just(MyApp.getDaoSession().getStudentDao().queryBuilder().where(StudentDao.Properties.TeacherId.eq(teacherId)).build().list())
+        Observable.just((teacherId != 0 ? (MyApp.getDaoSession().getStudentDao().queryBuilder().where(StudentDao.Properties.TeacherId.eq(teacherId)).limit(5).build()) : (MyApp.getDaoSession().getStudentDao().queryBuilder().build())).list())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<List<Student>>() {
@@ -69,4 +70,18 @@ public class StudentActivity extends AppCompatActivity {
                     }
                 });
     }
+
+    private void queryScore(long studentId){
+        Observable.just(MyApp.getDaoSession().getScoreDao().queryBuilder().where(ScoreDao.Properties.StudentId.eq(studentId)).build().unique())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Score>() {
+                    @Override
+                    public void accept(@NonNull Score score) throws Exception {
+                        Toast.makeText(StudentActivity.this, "成绩为" + score.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+    }
+
 }

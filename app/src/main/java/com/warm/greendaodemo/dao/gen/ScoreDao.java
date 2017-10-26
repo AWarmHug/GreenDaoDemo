@@ -1,13 +1,18 @@
 package com.warm.greendaodemo.dao.gen;
 
+import java.util.List;
+import java.util.ArrayList;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 
 import org.greenrobot.greendao.AbstractDao;
 import org.greenrobot.greendao.Property;
+import org.greenrobot.greendao.internal.SqlUtils;
 import org.greenrobot.greendao.internal.DaoConfig;
 import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.database.DatabaseStatement;
+
+import com.warm.greendaodemo.dao.entity.Student;
 
 import com.warm.greendaodemo.dao.entity.Score;
 
@@ -24,11 +29,14 @@ public class ScoreDao extends AbstractDao<Score, Long> {
      * Can be used for QueryBuilder and for referencing column names.
      */
     public static class Properties {
-        public final static Property Id = new Property(0, long.class, "id", true, "_id");
-        public final static Property Chinese = new Property(1, float.class, "chinese", false, "CHINESE");
-        public final static Property Math = new Property(2, float.class, "math", false, "MATH");
-        public final static Property English = new Property(3, float.class, "english", false, "ENGLISH");
+        public final static Property Id = new Property(0, Long.class, "id", true, "_id");
+        public final static Property Chinese = new Property(1, Float.class, "chinese", false, "CHINESE");
+        public final static Property Math = new Property(2, Float.class, "math", false, "MATH");
+        public final static Property English = new Property(3, Float.class, "english", false, "ENGLISH");
+        public final static Property StudentId = new Property(4, Long.class, "studentId", false, "STUDENT_ID");
     }
+
+    private DaoSession daoSession;
 
 
     public ScoreDao(DaoConfig config) {
@@ -37,16 +45,18 @@ public class ScoreDao extends AbstractDao<Score, Long> {
     
     public ScoreDao(DaoConfig config, DaoSession daoSession) {
         super(config, daoSession);
+        this.daoSession = daoSession;
     }
 
     /** Creates the underlying database table. */
     public static void createTable(Database db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"SCORE\" (" + //
-                "\"_id\" INTEGER PRIMARY KEY NOT NULL ," + // 0: id
-                "\"CHINESE\" REAL NOT NULL ," + // 1: chinese
-                "\"MATH\" REAL NOT NULL ," + // 2: math
-                "\"ENGLISH\" REAL NOT NULL );"); // 3: english
+                "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
+                "\"CHINESE\" REAL," + // 1: chinese
+                "\"MATH\" REAL," + // 2: math
+                "\"ENGLISH\" REAL," + // 3: english
+                "\"STUDENT_ID\" INTEGER);"); // 4: studentId
     }
 
     /** Drops the underlying database table. */
@@ -58,43 +68,93 @@ public class ScoreDao extends AbstractDao<Score, Long> {
     @Override
     protected final void bindValues(DatabaseStatement stmt, Score entity) {
         stmt.clearBindings();
-        stmt.bindLong(1, entity.getId());
-        stmt.bindDouble(2, entity.getChinese());
-        stmt.bindDouble(3, entity.getMath());
-        stmt.bindDouble(4, entity.getEnglish());
+ 
+        Long id = entity.getId();
+        if (id != null) {
+            stmt.bindLong(1, id);
+        }
+ 
+        Float chinese = entity.getChinese();
+        if (chinese != null) {
+            stmt.bindDouble(2, chinese);
+        }
+ 
+        Float math = entity.getMath();
+        if (math != null) {
+            stmt.bindDouble(3, math);
+        }
+ 
+        Float english = entity.getEnglish();
+        if (english != null) {
+            stmt.bindDouble(4, english);
+        }
+ 
+        Long studentId = entity.getStudentId();
+        if (studentId != null) {
+            stmt.bindLong(5, studentId);
+        }
     }
 
     @Override
     protected final void bindValues(SQLiteStatement stmt, Score entity) {
         stmt.clearBindings();
-        stmt.bindLong(1, entity.getId());
-        stmt.bindDouble(2, entity.getChinese());
-        stmt.bindDouble(3, entity.getMath());
-        stmt.bindDouble(4, entity.getEnglish());
+ 
+        Long id = entity.getId();
+        if (id != null) {
+            stmt.bindLong(1, id);
+        }
+ 
+        Float chinese = entity.getChinese();
+        if (chinese != null) {
+            stmt.bindDouble(2, chinese);
+        }
+ 
+        Float math = entity.getMath();
+        if (math != null) {
+            stmt.bindDouble(3, math);
+        }
+ 
+        Float english = entity.getEnglish();
+        if (english != null) {
+            stmt.bindDouble(4, english);
+        }
+ 
+        Long studentId = entity.getStudentId();
+        if (studentId != null) {
+            stmt.bindLong(5, studentId);
+        }
+    }
+
+    @Override
+    protected final void attachEntity(Score entity) {
+        super.attachEntity(entity);
+        entity.__setDaoSession(daoSession);
     }
 
     @Override
     public Long readKey(Cursor cursor, int offset) {
-        return cursor.getLong(offset + 0);
+        return cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0);
     }    
 
     @Override
     public Score readEntity(Cursor cursor, int offset) {
         Score entity = new Score( //
-            cursor.getLong(offset + 0), // id
-            cursor.getFloat(offset + 1), // chinese
-            cursor.getFloat(offset + 2), // math
-            cursor.getFloat(offset + 3) // english
+            cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
+            cursor.isNull(offset + 1) ? null : cursor.getFloat(offset + 1), // chinese
+            cursor.isNull(offset + 2) ? null : cursor.getFloat(offset + 2), // math
+            cursor.isNull(offset + 3) ? null : cursor.getFloat(offset + 3), // english
+            cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4) // studentId
         );
         return entity;
     }
      
     @Override
     public void readEntity(Cursor cursor, Score entity, int offset) {
-        entity.setId(cursor.getLong(offset + 0));
-        entity.setChinese(cursor.getFloat(offset + 1));
-        entity.setMath(cursor.getFloat(offset + 2));
-        entity.setEnglish(cursor.getFloat(offset + 3));
+        entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
+        entity.setChinese(cursor.isNull(offset + 1) ? null : cursor.getFloat(offset + 1));
+        entity.setMath(cursor.isNull(offset + 2) ? null : cursor.getFloat(offset + 2));
+        entity.setEnglish(cursor.isNull(offset + 3) ? null : cursor.getFloat(offset + 3));
+        entity.setStudentId(cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4));
      }
     
     @Override
@@ -114,7 +174,7 @@ public class ScoreDao extends AbstractDao<Score, Long> {
 
     @Override
     public boolean hasKey(Score entity) {
-        throw new UnsupportedOperationException("Unsupported for entities with a non-null key");
+        return entity.getId() != null;
     }
 
     @Override
@@ -122,4 +182,95 @@ public class ScoreDao extends AbstractDao<Score, Long> {
         return true;
     }
     
+    private String selectDeep;
+
+    protected String getSelectDeep() {
+        if (selectDeep == null) {
+            StringBuilder builder = new StringBuilder("SELECT ");
+            SqlUtils.appendColumns(builder, "T", getAllColumns());
+            builder.append(',');
+            SqlUtils.appendColumns(builder, "T0", daoSession.getStudentDao().getAllColumns());
+            builder.append(" FROM SCORE T");
+            builder.append(" LEFT JOIN STUDENT T0 ON T.\"STUDENT_ID\"=T0.\"_id\"");
+            builder.append(' ');
+            selectDeep = builder.toString();
+        }
+        return selectDeep;
+    }
+    
+    protected Score loadCurrentDeep(Cursor cursor, boolean lock) {
+        Score entity = loadCurrent(cursor, 0, lock);
+        int offset = getAllColumns().length;
+
+        Student student = loadCurrentOther(daoSession.getStudentDao(), cursor, offset);
+        entity.setStudent(student);
+
+        return entity;    
+    }
+
+    public Score loadDeep(Long key) {
+        assertSinglePk();
+        if (key == null) {
+            return null;
+        }
+
+        StringBuilder builder = new StringBuilder(getSelectDeep());
+        builder.append("WHERE ");
+        SqlUtils.appendColumnsEqValue(builder, "T", getPkColumns());
+        String sql = builder.toString();
+        
+        String[] keyArray = new String[] { key.toString() };
+        Cursor cursor = db.rawQuery(sql, keyArray);
+        
+        try {
+            boolean available = cursor.moveToFirst();
+            if (!available) {
+                return null;
+            } else if (!cursor.isLast()) {
+                throw new IllegalStateException("Expected unique result, but count was " + cursor.getCount());
+            }
+            return loadCurrentDeep(cursor, true);
+        } finally {
+            cursor.close();
+        }
+    }
+    
+    /** Reads all available rows from the given cursor and returns a list of new ImageTO objects. */
+    public List<Score> loadAllDeepFromCursor(Cursor cursor) {
+        int count = cursor.getCount();
+        List<Score> list = new ArrayList<Score>(count);
+        
+        if (cursor.moveToFirst()) {
+            if (identityScope != null) {
+                identityScope.lock();
+                identityScope.reserveRoom(count);
+            }
+            try {
+                do {
+                    list.add(loadCurrentDeep(cursor, false));
+                } while (cursor.moveToNext());
+            } finally {
+                if (identityScope != null) {
+                    identityScope.unlock();
+                }
+            }
+        }
+        return list;
+    }
+    
+    protected List<Score> loadDeepAllAndCloseCursor(Cursor cursor) {
+        try {
+            return loadAllDeepFromCursor(cursor);
+        } finally {
+            cursor.close();
+        }
+    }
+    
+
+    /** A raw-style query where you can pass any WHERE clause and arguments. */
+    public List<Score> queryDeep(String where, String... selectionArg) {
+        Cursor cursor = db.rawQuery(getSelectDeep() + where, selectionArg);
+        return loadDeepAllAndCloseCursor(cursor);
+    }
+ 
 }

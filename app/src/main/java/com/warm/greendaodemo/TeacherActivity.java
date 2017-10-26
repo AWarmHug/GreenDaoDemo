@@ -8,6 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,7 +24,6 @@ import com.warm.greendaodemo.dao.gen.TeacherDao;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -59,34 +60,36 @@ public class TeacherActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_teacher);
         ButterKnife.bind(this);
-        List<Teacher> teachers = new ArrayList<>();
-        mAdapter = new TeacherAdapter(teachers);
+        mAdapter = new TeacherAdapter(new ArrayList<Teacher>());
         mRecy.setAdapter(mAdapter);
         mAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener<Teacher>() {
             @Override
             public void itemClick(int position, final Teacher teacher) {
 
-                AlertDialog dialog=new AlertDialog.Builder(TeacherActivity.this)
+                AlertDialog dialog = new AlertDialog.Builder(TeacherActivity.this)
                         .setTitle("选择操作")
                         .setPositiveButton("查看学生详情", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Intent intent=new Intent(TeacherActivity.this,StudentActivity.class);
-                                intent.putExtra("teacherId",teacher.getId());
+                                Intent intent = new Intent(TeacherActivity.this, StudentActivity.class);
+                                intent.putExtra("teacherId", teacher.getId());
                                 startActivity(intent);
                             }
                         })
                         .setNegativeButton("添加学生", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Student student=new Student(20,"张三的学生",teacher.getId());
-                                Score score=new Score();
-                                score.setId(111);
-                                score.setChinese(60);
-                                score.setEnglish(80);
-                                score.setMath(900);
-                                student.setScore(score);
-                                addStudent(student);
+                                Score score = new Score();
+                                score.setChinese(60f);
+                                score.setEnglish(80f);
+                                score.setMath(90f);
+                                Student student = new Student();
+                                student.setName("张三的学生");
+                                student.setTeacherId(teacher.getId());
+                                student.setAge(15);
+                                student.setAddress("江苏常州");
+//                                student.setTarget("常州大学");
+                                addStudent(student,score);
                             }
                         })
                         .create();
@@ -105,12 +108,28 @@ public class TeacherActivity extends AppCompatActivity {
 
     }
 
-    private void addStudent(Student student) {
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_teacher, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        startActivity(new Intent(this, StudentActivity.class));
+        return true;
+    }
+
+    private void addStudent(Student student, final Score score) {
         Observable.just(student)
                 .map(new Function<Student, Long>() {
                     @Override
                     public Long apply(@NonNull Student student) throws Exception {
-                        return  MyApp.getDaoSession().getStudentDao().insert(student);
+                        Long id = MyApp.getDaoSession().getStudentDao().insert(student);
+                        score.setStudentId(id);
+                        MyApp.getDaoSession().getScoreDao().insert(score);
+                        return id;
                     }
                 })
                 .subscribeOn(Schedulers.io())
@@ -118,7 +137,7 @@ public class TeacherActivity extends AppCompatActivity {
                 .subscribe(new Consumer<Long>() {
                     @Override
                     public void accept(@NonNull Long aLong) throws Exception {
-                        if (aLong>0) {
+                        if (aLong > 0) {
                             Toast.makeText(TeacherActivity.this, "添加成功", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -132,7 +151,11 @@ public class TeacherActivity extends AppCompatActivity {
         switch (view.getId()) {
             case R.id.bt_add:
 
-                final Teacher teacher = new Teacher(new Random().nextInt(1000), "张三");
+                final Teacher teacher = new Teacher();
+                teacher.setName("张三");
+                teacher.setAge(24);
+                teacher.setSex(1);
+                teacher.setTeachAge(2);
                 Observable.just(teacher)
                         .map(new Function<Teacher, Long>() {
                             @Override
@@ -145,6 +168,7 @@ public class TeacherActivity extends AppCompatActivity {
                         .subscribe(new Consumer<Long>() {
                             @Override
                             public void accept(@NonNull Long aLong) throws Exception {
+                                teacher.setId(aLong);
                                 mAdapter.insertTopData(teacher);
                             }
                         });
@@ -197,7 +221,7 @@ public class TeacherActivity extends AppCompatActivity {
                 .create(new ObservableOnSubscribe<List<Teacher>>() {
                     @Override
                     public void subscribe(@NonNull ObservableEmitter<List<Teacher>> e) throws Exception {
-                        e.onNext(MyApp.getDaoSession().getTeacherDao().queryBuilder().build().list());
+                        e.onNext(MyApp.getDaoSession().getTeacherDao().queryBuilder().orderDesc(TeacherDao.Properties.Id).build().list());
                         e.onComplete();
 
                     }
@@ -247,7 +271,7 @@ public class TeacherActivity extends AppCompatActivity {
                 .subscribe(new Consumer<List<Teacher>>() {
                     @Override
                     public void accept(@NonNull List<Teacher> teachers) throws Exception {
-                        if (teachers.size()==0){
+                        if (teachers.size() == 0) {
                             Toast.makeText(TeacherActivity.this, "查询无果", Toast.LENGTH_SHORT).show();
                         }
                         mAdapter.refreshAll(teachers);

@@ -28,7 +28,7 @@ public class StudentAdapter extends BaseAdapter<Student,StudentAdapter.ViewHolde
     @Override
     protected void onBind(ViewHolder holder, int position) {
         holder.tvName.setText(list.get(position).getName());
-        holder.tvInfo.setText("id="+list.get(position).getId());
+        holder.tvInfo.setText("id="+list.get(position).getId()+"今年"+(list.get(position).getAge()==null?0:list.get(position).getAge())+"岁"+"住址"+(list.get(position).getAddress()==null?"无":list.get(position).getAddress()));
 
     }
 

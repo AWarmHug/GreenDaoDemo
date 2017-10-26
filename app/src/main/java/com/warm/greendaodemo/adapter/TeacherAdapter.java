@@ -30,7 +30,7 @@ public class TeacherAdapter extends BaseAdapter<Teacher,TeacherAdapter.ViewHolde
     protected void onBind(ViewHolder holder, int position) {
         holder.iv.setImageResource(R.mipmap.ic_launcher);
         holder.tv_name.setText(list.get(position).getName());
-        holder.tv_info.setText("我的id是"+list.get(position).getId());
+        holder.tv_info.setText("我的id是"+list.get(position).getId()+"年纪是"+list.get(position).getAge()+"性别是"+list.get(position).getSex()+"教龄="+(list.get(position).getTeachAge()==null?0: list.get(position).getTeachAge()));
     }
 
     @Override

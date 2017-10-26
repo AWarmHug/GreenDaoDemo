@@ -3,6 +3,8 @@ package com.warm.greendaodemo;
 import android.app.Application;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.facebook.stetho.Stetho;
+import com.warm.greendaodemo.dao.MySQLiteOpenHelper;
 import com.warm.greendaodemo.dao.gen.DaoMaster;
 import com.warm.greendaodemo.dao.gen.DaoSession;
 
@@ -22,18 +24,25 @@ public class MyApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Stetho.initializeWithDefaults(this);
         setupDb();
     }
 
     private void setupDb() {
+
         //创建数据库shop.db"
-        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "shop.db", null);
+
+
+        MySQLiteOpenHelper helper = new MySQLiteOpenHelper(this, "shop.db", null);
+
         //获取可写数据库
         SQLiteDatabase db = helper.getWritableDatabase();
         //获取数据库对象
         DaoMaster daoMaster = new DaoMaster(db);
+
         //获取Dao对象管理者
         daoSession = daoMaster.newSession();
+
     }
 
     public static DaoSession getDaoSession() {
