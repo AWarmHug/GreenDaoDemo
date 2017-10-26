@@ -31,6 +31,8 @@ public class TeacherDao extends AbstractDao<Teacher, Long> {
         public final static Property TeachAge = new Property(4, Integer.class, "teachAge", false, "TEACH_AGE");
     }
 
+    private DaoSession daoSession;
+
 
     public TeacherDao(DaoConfig config) {
         super(config);
@@ -38,6 +40,7 @@ public class TeacherDao extends AbstractDao<Teacher, Long> {
     
     public TeacherDao(DaoConfig config, DaoSession daoSession) {
         super(config, daoSession);
+        this.daoSession = daoSession;
     }
 
     /** Creates the underlying database table. */
@@ -107,6 +110,12 @@ public class TeacherDao extends AbstractDao<Teacher, Long> {
         if (teachAge != null) {
             stmt.bindLong(5, teachAge);
         }
+    }
+
+    @Override
+    protected final void attachEntity(Teacher entity) {
+        super.attachEntity(entity);
+        entity.__setDaoSession(daoSession);
     }
 
     @Override

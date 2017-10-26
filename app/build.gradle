@@ -34,15 +34,17 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.facebook.stetho:stetho:1.5.0'
-    //greendao依赖
+    testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:recyclerview-v7:25.3.1'
+
+    compile 'com.facebook.stetho:stetho:1.5.0'
+    //greendao依赖
     compile 'org.greenrobot:greendao:3.2.0'
+    // 数据库加密时添加
+    compile 'net.zetetic:android-database-sqlcipher:3.5.6'
     compile 'com.jakewharton:butterknife:8.7.0'
-    compile 'com.github.bumptech.glide:glide:3.7.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.7.0'
     compile 'io.reactivex.rxjava2:rxjava:2.1.0'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
-    testCompile 'junit:junit:4.12'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.7.0'
 }

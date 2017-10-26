@@ -22,6 +22,7 @@ import java.io.IOException;
 
 public class MySQLiteOpenHelper extends DaoMaster.OpenHelper {
     private static final String TAG = "MySQLiteOpenHelper--";
+
     public MySQLiteOpenHelper(final Context context, String name, SQLiteDatabase.CursorFactory factory) {
         super(new ContextWrapper(context) {
             /**
@@ -38,7 +39,7 @@ public class MySQLiteOpenHelper extends DaoMaster.OpenHelper {
                     return null;
                 } else {// 如果存在
                     // 获取sd卡路径
-                   File file=new File( context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),name);
+                    File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), name);
 
                     // 数据库文件是否创建成功
                     boolean isFileCreateSuccess = false;
@@ -81,14 +82,14 @@ public class MySQLiteOpenHelper extends DaoMaster.OpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        Log.d(TAG, "onUpgrade: oldVersion="+oldVersion+"newVersion="+newVersion);
-        if (oldVersion<3) {
+        Log.d(TAG, "onUpgrade: oldVersion=" + oldVersion + "newVersion=" + newVersion);
+        if (oldVersion < 3) {
             newVersion3(db);
         }
-        if (oldVersion<4){
+        if (oldVersion < 4) {
             newVersion4(db);
         }
-        if (oldVersion<5){
+        if (oldVersion < 5) {
             newVersion5(db);
         }
       /*  if (oldVersion<6){
@@ -97,21 +98,21 @@ public class MySQLiteOpenHelper extends DaoMaster.OpenHelper {
 
     }
 
-    private void newVersion3(SQLiteDatabase db){
-        MigrationHelper.migrate(db,TeacherDao.class);
+    private void newVersion3(SQLiteDatabase db) {
+        MigrationHelper.migrate(db, TeacherDao.class);
 
     }
 
     private void newVersion4(SQLiteDatabase db) {
-        MigrationHelper.migrate(db,StudentDao.class);
+        MigrationHelper.migrate(db, StudentDao.class);
     }
 
-    private void newVersion5(SQLiteDatabase db){
-        MigrationHelper.migrate(db,StudentDao.class);
+    private void newVersion5(SQLiteDatabase db) {
+        MigrationHelper.migrate(db, StudentDao.class);
     }
 
-    private void newVersion6(SQLiteDatabase db){
-        MigrationHelper.migrate(db,StudentDao.class);
+    private void newVersion6(SQLiteDatabase db) {
+        MigrationHelper.migrate(db, StudentDao.class);
     }
 
 }

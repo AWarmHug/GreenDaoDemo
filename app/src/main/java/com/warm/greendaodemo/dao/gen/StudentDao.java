@@ -1,5 +1,6 @@
 package com.warm.greendaodemo.dao.gen;
 
+import java.util.List;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 
@@ -8,6 +9,8 @@ import org.greenrobot.greendao.Property;
 import org.greenrobot.greendao.internal.DaoConfig;
 import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.database.DatabaseStatement;
+import org.greenrobot.greendao.query.Query;
+import org.greenrobot.greendao.query.QueryBuilder;
 
 import com.warm.greendaodemo.dao.entity.Student;
 
@@ -31,6 +34,7 @@ public class StudentDao extends AbstractDao<Student, Long> {
         public final static Property Address = new Property(4, String.class, "address", false, "ADDRESS");
     }
 
+    private Query<Student> teacher_StudentsQuery;
 
     public StudentDao(DaoConfig config) {
         super(config);
@@ -168,4 +172,18 @@ public class StudentDao extends AbstractDao<Student, Long> {
         return true;
     }
     
+    /** Internal query to resolve the "students" to-many relationship of Teacher. */
+    public List<Student> _queryTeacher_Students(Long teacherId) {
+        synchronized (this) {
+            if (teacher_StudentsQuery == null) {
+                QueryBuilder<Student> queryBuilder = queryBuilder();
+                queryBuilder.where(Properties.TeacherId.eq(null));
+                teacher_StudentsQuery = queryBuilder.build();
+            }
+        }
+        Query<Student> query = teacher_StudentsQuery.forCurrentThread();
+        query.setParameter(0, teacherId);
+        return query.list();
+    }
+
 }

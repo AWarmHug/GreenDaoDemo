@@ -1,12 +1,13 @@
 package com.warm.greendaodemo;
 
 import android.app.Application;
-import android.database.sqlite.SQLiteDatabase;
 
 import com.facebook.stetho.Stetho;
 import com.warm.greendaodemo.dao.MySQLiteOpenHelper;
 import com.warm.greendaodemo.dao.gen.DaoMaster;
 import com.warm.greendaodemo.dao.gen.DaoSession;
+
+import org.greenrobot.greendao.database.Database;
 
 
 /**
@@ -19,6 +20,10 @@ public class MyApp extends Application {
 
     //获取所有Dao的顶级上层，用来负责所有dao的增删改查
     private static DaoSession daoSession;
+
+    private static final boolean idEncrypt=false;
+
+    private static final String PWD="pwd";
 
 
     @Override
@@ -33,10 +38,10 @@ public class MyApp extends Application {
         //创建数据库shop.db"
 
 
-        MySQLiteOpenHelper helper = new MySQLiteOpenHelper(this, "shop.db", null);
+        MySQLiteOpenHelper helper = new MySQLiteOpenHelper(this, idEncrypt?"shop_encrypt.db":"shop.db", null);
 
         //获取可写数据库
-        SQLiteDatabase db = helper.getWritableDatabase();
+        Database db = idEncrypt?helper.getEncryptedWritableDb(PWD):helper.getWritableDb();
         //获取数据库对象
         DaoMaster daoMaster = new DaoMaster(db);
 
