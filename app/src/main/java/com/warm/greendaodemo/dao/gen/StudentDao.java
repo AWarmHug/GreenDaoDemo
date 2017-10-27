@@ -28,11 +28,14 @@ public class StudentDao extends AbstractDao<Student, Long> {
      */
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
-        public final static Property Name = new Property(1, String.class, "name", false, "NAME");
-        public final static Property TeacherId = new Property(2, Long.class, "teacherId", false, "TEACHER_ID");
-        public final static Property Age = new Property(3, Integer.class, "age", false, "AGE");
-        public final static Property Address = new Property(4, String.class, "address", false, "ADDRESS");
+        public final static Property Stu_num = new Property(1, Long.class, "stu_num", false, "STU_NUM");
+        public final static Property Name = new Property(2, String.class, "name", false, "NAME");
+        public final static Property TeacherId = new Property(3, Long.class, "teacherId", false, "TEACHER_ID");
+        public final static Property Age = new Property(4, Integer.class, "age", false, "AGE");
+        public final static Property Address = new Property(5, String.class, "address", false, "ADDRESS");
     }
+
+    private DaoSession daoSession;
 
     private Query<Student> teacher_StudentsQuery;
 
@@ -42,6 +45,7 @@ public class StudentDao extends AbstractDao<Student, Long> {
     
     public StudentDao(DaoConfig config, DaoSession daoSession) {
         super(config, daoSession);
+        this.daoSession = daoSession;
     }
 
     /** Creates the underlying database table. */
@@ -49,10 +53,14 @@ public class StudentDao extends AbstractDao<Student, Long> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"STUDENT\" (" + //
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
-                "\"NAME\" TEXT," + // 1: name
-                "\"TEACHER_ID\" INTEGER," + // 2: teacherId
-                "\"AGE\" INTEGER," + // 3: age
-                "\"ADDRESS\" TEXT);"); // 4: address
+                "\"STU_NUM\" INTEGER," + // 1: stu_num
+                "\"NAME\" TEXT," + // 2: name
+                "\"TEACHER_ID\" INTEGER NOT NULL ," + // 3: teacherId
+                "\"AGE\" INTEGER," + // 4: age
+                "\"ADDRESS\" TEXT);"); // 5: address
+        // Add Indexes
+        db.execSQL("CREATE INDEX " + constraint + "IDX_STUDENT_STU_NUM ON STUDENT" +
+                " (\"STU_NUM\" ASC);");
     }
 
     /** Drops the underlying database table. */
@@ -70,24 +78,25 @@ public class StudentDao extends AbstractDao<Student, Long> {
             stmt.bindLong(1, id);
         }
  
-        String name = entity.getName();
-        if (name != null) {
-            stmt.bindString(2, name);
+        Long stu_num = entity.getStu_num();
+        if (stu_num != null) {
+            stmt.bindLong(2, stu_num);
         }
  
-        Long teacherId = entity.getTeacherId();
-        if (teacherId != null) {
-            stmt.bindLong(3, teacherId);
+        String name = entity.getName();
+        if (name != null) {
+            stmt.bindString(3, name);
         }
+        stmt.bindLong(4, entity.getTeacherId());
  
         Integer age = entity.getAge();
         if (age != null) {
-            stmt.bindLong(4, age);
+            stmt.bindLong(5, age);
         }
  
         String address = entity.getAddress();
         if (address != null) {
-            stmt.bindString(5, address);
+            stmt.bindString(6, address);
         }
     }
 
@@ -100,25 +109,32 @@ public class StudentDao extends AbstractDao<Student, Long> {
             stmt.bindLong(1, id);
         }
  
-        String name = entity.getName();
-        if (name != null) {
-            stmt.bindString(2, name);
+        Long stu_num = entity.getStu_num();
+        if (stu_num != null) {
+            stmt.bindLong(2, stu_num);
         }
  
-        Long teacherId = entity.getTeacherId();
-        if (teacherId != null) {
-            stmt.bindLong(3, teacherId);
+        String name = entity.getName();
+        if (name != null) {
+            stmt.bindString(3, name);
         }
+        stmt.bindLong(4, entity.getTeacherId());
  
         Integer age = entity.getAge();
         if (age != null) {
-            stmt.bindLong(4, age);
+            stmt.bindLong(5, age);
         }
  
         String address = entity.getAddress();
         if (address != null) {
-            stmt.bindString(5, address);
+            stmt.bindString(6, address);
         }
+    }
+
+    @Override
+    protected final void attachEntity(Student entity) {
+        super.attachEntity(entity);
+        entity.__setDaoSession(daoSession);
     }
 
     @Override
@@ -130,10 +146,11 @@ public class StudentDao extends AbstractDao<Student, Long> {
     public Student readEntity(Cursor cursor, int offset) {
         Student entity = new Student( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // name
-            cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2), // teacherId
-            cursor.isNull(offset + 3) ? null : cursor.getInt(offset + 3), // age
-            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4) // address
+            cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1), // stu_num
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // name
+            cursor.getLong(offset + 3), // teacherId
+            cursor.isNull(offset + 4) ? null : cursor.getInt(offset + 4), // age
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5) // address
         );
         return entity;
     }
@@ -141,10 +158,11 @@ public class StudentDao extends AbstractDao<Student, Long> {
     @Override
     public void readEntity(Cursor cursor, Student entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
-        entity.setName(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setTeacherId(cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2));
-        entity.setAge(cursor.isNull(offset + 3) ? null : cursor.getInt(offset + 3));
-        entity.setAddress(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setStu_num(cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1));
+        entity.setName(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setTeacherId(cursor.getLong(offset + 3));
+        entity.setAge(cursor.isNull(offset + 4) ? null : cursor.getInt(offset + 4));
+        entity.setAddress(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
      }
     
     @Override

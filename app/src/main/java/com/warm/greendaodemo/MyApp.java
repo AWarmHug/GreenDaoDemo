@@ -21,9 +21,9 @@ public class MyApp extends Application {
     //获取所有Dao的顶级上层，用来负责所有dao的增删改查
     private static DaoSession daoSession;
 
-    private static final boolean idEncrypt=false;
+    private final boolean idEncrypt = false;
 
-    private static final String PWD="pwd";
+    private static final String PWD = "pwd";
 
 
     @Override
@@ -38,10 +38,10 @@ public class MyApp extends Application {
         //创建数据库shop.db"
 
 
-        MySQLiteOpenHelper helper = new MySQLiteOpenHelper(this, idEncrypt?"shop_encrypt.db":"shop.db", null);
+        MySQLiteOpenHelper helper = new MySQLiteOpenHelper(this, idEncrypt ? "shop_encrypt.db" : "shop.db", null);
 
         //获取可写数据库
-        Database db = idEncrypt?helper.getEncryptedWritableDb(PWD):helper.getWritableDb();
+        Database db = idEncrypt ? helper.getEncryptedWritableDb(PWD) : helper.getWritableDb();
         //获取数据库对象
         DaoMaster daoMaster = new DaoMaster(db);
 
