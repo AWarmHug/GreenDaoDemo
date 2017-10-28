@@ -11,6 +11,8 @@ import org.greenrobot.greendao.internal.SqlUtils;
 import org.greenrobot.greendao.internal.DaoConfig;
 import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.database.DatabaseStatement;
+import org.greenrobot.greendao.query.Query;
+import org.greenrobot.greendao.query.QueryBuilder;
 
 import com.warm.greendaodemo.dao.entity.Student;
 
@@ -34,10 +36,12 @@ public class ScoreDao extends AbstractDao<Score, Long> {
         public final static Property Math = new Property(2, Float.class, "math", false, "MATH");
         public final static Property English = new Property(3, Float.class, "english", false, "ENGLISH");
         public final static Property StudentId = new Property(4, Long.class, "studentId", false, "STUDENT_ID");
+        public final static Property TeacherTag = new Property(5, String.class, "teacherTag", false, "TEACHER_TAG");
     }
 
     private DaoSession daoSession;
 
+    private Query<Score> teacher_ScoresQuery;
 
     public ScoreDao(DaoConfig config) {
         super(config);
@@ -56,7 +60,8 @@ public class ScoreDao extends AbstractDao<Score, Long> {
                 "\"CHINESE\" REAL," + // 1: chinese
                 "\"MATH\" REAL," + // 2: math
                 "\"ENGLISH\" REAL," + // 3: english
-                "\"STUDENT_ID\" INTEGER);"); // 4: studentId
+                "\"STUDENT_ID\" INTEGER," + // 4: studentId
+                "\"TEACHER_TAG\" TEXT);"); // 5: teacherTag
     }
 
     /** Drops the underlying database table. */
@@ -93,6 +98,11 @@ public class ScoreDao extends AbstractDao<Score, Long> {
         if (studentId != null) {
             stmt.bindLong(5, studentId);
         }
+ 
+        String teacherTag = entity.getTeacherTag();
+        if (teacherTag != null) {
+            stmt.bindString(6, teacherTag);
+        }
     }
 
     @Override
@@ -123,6 +133,11 @@ public class ScoreDao extends AbstractDao<Score, Long> {
         if (studentId != null) {
             stmt.bindLong(5, studentId);
         }
+ 
+        String teacherTag = entity.getTeacherTag();
+        if (teacherTag != null) {
+            stmt.bindString(6, teacherTag);
+        }
     }
 
     @Override
@@ -143,7 +158,8 @@ public class ScoreDao extends AbstractDao<Score, Long> {
             cursor.isNull(offset + 1) ? null : cursor.getFloat(offset + 1), // chinese
             cursor.isNull(offset + 2) ? null : cursor.getFloat(offset + 2), // math
             cursor.isNull(offset + 3) ? null : cursor.getFloat(offset + 3), // english
-            cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4) // studentId
+            cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4), // studentId
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5) // teacherTag
         );
         return entity;
     }
@@ -155,6 +171,7 @@ public class ScoreDao extends AbstractDao<Score, Long> {
         entity.setMath(cursor.isNull(offset + 2) ? null : cursor.getFloat(offset + 2));
         entity.setEnglish(cursor.isNull(offset + 3) ? null : cursor.getFloat(offset + 3));
         entity.setStudentId(cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4));
+        entity.setTeacherTag(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
      }
     
     @Override
@@ -182,6 +199,20 @@ public class ScoreDao extends AbstractDao<Score, Long> {
         return true;
     }
     
+    /** Internal query to resolve the "scores" to-many relationship of Teacher. */
+    public List<Score> _queryTeacher_Scores(String teacherTag) {
+        synchronized (this) {
+            if (teacher_ScoresQuery == null) {
+                QueryBuilder<Score> queryBuilder = queryBuilder();
+                queryBuilder.where(Properties.TeacherTag.eq(null));
+                teacher_ScoresQuery = queryBuilder.build();
+            }
+        }
+        Query<Score> query = teacher_ScoresQuery.forCurrentThread();
+        query.setParameter(0, teacherTag);
+        return query.list();
+    }
+
     private String selectDeep;
 
     protected String getSelectDeep() {

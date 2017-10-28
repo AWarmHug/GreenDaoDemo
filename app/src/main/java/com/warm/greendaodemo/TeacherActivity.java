@@ -17,8 +17,10 @@ import android.widget.Toast;
 
 import com.warm.greendaodemo.adapter.BaseAdapter;
 import com.warm.greendaodemo.adapter.TeacherAdapter;
+import com.warm.greendaodemo.dao.entity.JoinStudentWithSubject;
 import com.warm.greendaodemo.dao.entity.Score;
 import com.warm.greendaodemo.dao.entity.Student;
+import com.warm.greendaodemo.dao.entity.Subject;
 import com.warm.greendaodemo.dao.entity.Teacher;
 import com.warm.greendaodemo.dao.gen.TeacherDao;
 
@@ -60,6 +62,14 @@ public class TeacherActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_teacher);
         ButterKnife.bind(this);
+        final List<Subject> subjects=new ArrayList<>();
+        subjects.add(new Subject(0L,"语文"));
+        subjects.add(new Subject(1L,"数学"));
+        subjects.add(new Subject(2L,"英语"));
+        if (MyApp.getDaoSession().getSubjectDao().queryBuilder().count()==0){
+            MyApp.getDaoSession().getSubjectDao().insertInTx(subjects);
+        }
+
         mAdapter = new TeacherAdapter(new ArrayList<Teacher>());
         mRecy.setAdapter(mAdapter);
         mAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener<Teacher>() {
@@ -79,17 +89,19 @@ public class TeacherActivity extends AppCompatActivity {
                         .setNegativeButton("添加学生", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Score score = new Score();
-                                score.setChinese(60f);
-                                score.setEnglish(80f);
-                                score.setMath(90f);
+                                //学生
                                 Student student = new Student();
                                 student.setName("张三的学生");
                                 student.setTeacherId(teacher.getId());
                                 student.setAge(15);
                                 student.setAddress("江苏常州");
-//                                student.setTarget("常州大学");
-                                addStudent(student,score);
+                                //成绩
+                                Score score = new Score();
+                                score.setChinese(60f);
+                                score.setEnglish(80f);
+                                score.setMath(90f);
+                                //选课
+                                addStudent(student,score,subjects.get(0),subjects.get(2));
                             }
                         })
                         .create();
@@ -121,7 +133,7 @@ public class TeacherActivity extends AppCompatActivity {
         return true;
     }
 
-    private void addStudent(Student student, final Score score) {
+    private void addStudent( Student student, final Score score,final Subject... subjects) {
         Observable.just(student)
                 .map(new Function<Student, Long>() {
                     @Override
@@ -129,6 +141,12 @@ public class TeacherActivity extends AppCompatActivity {
                         Long id = MyApp.getDaoSession().getStudentDao().insert(student);
                         score.setStudentId(id);
                         MyApp.getDaoSession().getScoreDao().insert(score);
+
+                        List<JoinStudentWithSubject> studentWithSubjects= new ArrayList<>();
+                        for (int i = 0; i < subjects.length; i++) {
+                            studentWithSubjects.add(new JoinStudentWithSubject(null,id,subjects[i].getId()));
+                        }
+                        MyApp.getDaoSession().getJoinStudentWithSubjectDao().insertInTx(studentWithSubjects);
                         return id;
                     }
                 })
@@ -142,7 +160,6 @@ public class TeacherActivity extends AppCompatActivity {
                         }
                     }
                 });
-
 
     }
 

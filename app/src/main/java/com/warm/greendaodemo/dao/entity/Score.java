@@ -18,65 +18,88 @@ import org.greenrobot.greendao.annotation.ToOne;
 @Entity
 public class Score {
     @Id(autoincrement = true)
-    private  Long id;
+    private Long id;
     private Float chinese;
-    private  Float math;
-    private  Float english;
+    private Float math;
+    private Float english;
 
     private Long studentId;
     @ToOne(joinProperty = "studentId")
     private Student student;
-    /** Used to resolve relations */
+
+    private String teacherTag;
+
+    /**
+     * Used to resolve relations
+     */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
-    /** Used for active entity operations. */
+    /**
+     * Used for active entity operations.
+     */
     @Generated(hash = 302717168)
     private transient ScoreDao myDao;
-    @Generated(hash = 732546871)
-    public Score(Long id, Float chinese, Float math, Float english,
-            Long studentId) {
+
+    @Generated(hash = 182535137)
+    public Score(Long id, Float chinese, Float math, Float english, Long studentId,
+            String teacherTag) {
         this.id = id;
         this.chinese = chinese;
         this.math = math;
         this.english = english;
         this.studentId = studentId;
+        this.teacherTag = teacherTag;
     }
+
     @Generated(hash = 226049941)
     public Score() {
     }
+
     public Long getId() {
         return this.id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
+
     public Float getChinese() {
         return this.chinese;
     }
+
     public void setChinese(Float chinese) {
         this.chinese = chinese;
     }
+
     public Float getMath() {
         return this.math;
     }
+
     public void setMath(Float math) {
         this.math = math;
     }
+
     public Float getEnglish() {
         return this.english;
     }
+
     public void setEnglish(Float english) {
         this.english = english;
     }
+
     public Long getStudentId() {
         return this.studentId;
     }
+
     public void setStudentId(Long studentId) {
         this.studentId = studentId;
     }
+
     @Generated(hash = 79695740)
     private transient Long student__resolvedKey;
-    /** To-one relationship, resolved on first access. */
+    /**
+     * To-one relationship, resolved on first access.
+     */
     @Generated(hash = 313494093)
     public Student getStudent() {
         Long __key = this.studentId;
@@ -94,7 +117,10 @@ public class Score {
         }
         return student;
     }
-    /** called by internal mechanisms, do not call yourself. */
+
+    /**
+     * called by internal mechanisms, do not call yourself.
+     */
     @Generated(hash = 490304967)
     public void setStudent(Student student) {
         synchronized (this) {
@@ -103,6 +129,7 @@ public class Score {
             student__resolvedKey = studentId;
         }
     }
+
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
      * Entity must attached to an entity context.
@@ -114,6 +141,7 @@ public class Score {
         }
         myDao.delete(this);
     }
+
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
      * Entity must attached to an entity context.
@@ -125,6 +153,7 @@ public class Score {
         }
         myDao.refresh(this);
     }
+
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#update(Object)}.
      * Entity must attached to an entity context.
@@ -136,7 +165,10 @@ public class Score {
         }
         myDao.update(this);
     }
-    /** called by internal mechanisms, do not call yourself. */
+
+    /**
+     * called by internal mechanisms, do not call yourself.
+     */
     @Generated(hash = 339145390)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
@@ -152,5 +184,13 @@ public class Score {
                 ", english=" + english +
                 ", studentId=" + studentId +
                 '}';
+    }
+
+    public String getTeacherTag() {
+        return this.teacherTag;
+    }
+
+    public void setTeacherTag(String teacherTag) {
+        this.teacherTag = teacherTag;
     }
 }

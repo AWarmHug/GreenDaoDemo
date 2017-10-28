@@ -78,6 +78,8 @@ public class StudentActivity extends AppCompatActivity {
                 .subscribe(new Consumer<Score>() {
                     @Override
                     public void accept(@NonNull Score score) throws Exception {
+
+
                         Toast.makeText(StudentActivity.this, "成绩为" + score.toString(), Toast.LENGTH_SHORT).show();
                     }
                 });

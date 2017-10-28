@@ -29,6 +29,7 @@ public class TeacherDao extends AbstractDao<Teacher, Long> {
         public final static Property Age = new Property(2, int.class, "age", false, "AGE");
         public final static Property Sex = new Property(3, Integer.class, "sex", false, "SEX");
         public final static Property TeachAge = new Property(4, Integer.class, "teachAge", false, "TEACH_AGE");
+        public final static Property Tag = new Property(5, String.class, "tag", false, "TAG");
     }
 
     private DaoSession daoSession;
@@ -51,7 +52,8 @@ public class TeacherDao extends AbstractDao<Teacher, Long> {
                 "\"NAME\" TEXT," + // 1: name
                 "\"AGE\" INTEGER NOT NULL ," + // 2: age
                 "\"SEX\" INTEGER," + // 3: sex
-                "\"TEACH_AGE\" INTEGER);"); // 4: teachAge
+                "\"TEACH_AGE\" INTEGER," + // 4: teachAge
+                "\"TAG\" TEXT);"); // 5: tag
     }
 
     /** Drops the underlying database table. */
@@ -84,6 +86,11 @@ public class TeacherDao extends AbstractDao<Teacher, Long> {
         if (teachAge != null) {
             stmt.bindLong(5, teachAge);
         }
+ 
+        String tag = entity.getTag();
+        if (tag != null) {
+            stmt.bindString(6, tag);
+        }
     }
 
     @Override
@@ -110,6 +117,11 @@ public class TeacherDao extends AbstractDao<Teacher, Long> {
         if (teachAge != null) {
             stmt.bindLong(5, teachAge);
         }
+ 
+        String tag = entity.getTag();
+        if (tag != null) {
+            stmt.bindString(6, tag);
+        }
     }
 
     @Override
@@ -130,7 +142,8 @@ public class TeacherDao extends AbstractDao<Teacher, Long> {
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // name
             cursor.getInt(offset + 2), // age
             cursor.isNull(offset + 3) ? null : cursor.getInt(offset + 3), // sex
-            cursor.isNull(offset + 4) ? null : cursor.getInt(offset + 4) // teachAge
+            cursor.isNull(offset + 4) ? null : cursor.getInt(offset + 4), // teachAge
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5) // tag
         );
         return entity;
     }
@@ -142,6 +155,7 @@ public class TeacherDao extends AbstractDao<Teacher, Long> {
         entity.setAge(cursor.getInt(offset + 2));
         entity.setSex(cursor.isNull(offset + 3) ? null : cursor.getInt(offset + 3));
         entity.setTeachAge(cursor.isNull(offset + 4) ? null : cursor.getInt(offset + 4));
+        entity.setTag(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
      }
     
     @Override

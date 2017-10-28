@@ -1,62 +1,50 @@
 package com.warm.greendaodemo.dao.entity;
 
 import com.warm.greendaodemo.dao.gen.DaoSession;
-import com.warm.greendaodemo.dao.gen.ScoreDao;
 import com.warm.greendaodemo.dao.gen.StudentDao;
-import com.warm.greendaodemo.dao.gen.TeacherDao;
+import com.warm.greendaodemo.dao.gen.SubjectDao;
 
 import org.greenrobot.greendao.DaoException;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
-import org.greenrobot.greendao.annotation.JoinProperty;
+import org.greenrobot.greendao.annotation.JoinEntity;
 import org.greenrobot.greendao.annotation.ToMany;
 
 import java.util.List;
 
 /**
  * 作者：warm
- * 时间：2017-10-20 14:36
+ * 时间：2017-10-28 10:22
  * 描述：
  */
 @Entity
-public class Teacher {
+public class Subject {
     @Id(autoincrement = true)
     private Long id;
     private String name;
-    private int age;
-    private Integer sex;
-    private Integer teachAge;
-    @ToMany(referencedJoinProperty = "teacherId")
-//    @ToMany(joinProperties = {@JoinProperty(name = "id" ,referencedName = "teacherId")})
+
+    @ToMany
+    @JoinEntity(entity = JoinStudentWithSubject.class,
+            sourceProperty = "subjectId",
+            targetProperty = "studentId"
+    )
     private List<Student> students;
-
-    private String tag;
-    @ToMany(joinProperties = {@JoinProperty(name = "tag",referencedName = "teacherTag")})
-    private List<Score> scores;
-
-
-
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
     /** Used for active entity operations. */
-    @Generated(hash = 648119699)
-    private transient TeacherDao myDao;
+    @Generated(hash = 1644932788)
+    private transient SubjectDao myDao;
 
-
-    @Generated(hash = 966849436)
-    public Teacher(Long id, String name, int age, Integer sex, Integer teachAge, String tag) {
+    @Generated(hash = 1290231420)
+    public Subject(Long id, String name) {
         this.id = id;
         this.name = name;
-        this.age = age;
-        this.sex = sex;
-        this.teachAge = teachAge;
-        this.tag = tag;
     }
 
-    @Generated(hash = 1630413260)
-    public Teacher() {
+    @Generated(hash = 1617906264)
+    public Subject() {
     }
 
     public Long getId() {
@@ -75,35 +63,11 @@ public class Teacher {
         this.name = name;
     }
 
-    public int getAge() {
-        return this.age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    public Integer getSex() {
-        return this.sex;
-    }
-
-    public void setSex(Integer sex) {
-        this.sex = sex;
-    }
-
-    public Integer getTeachAge() {
-        return this.teachAge;
-    }
-
-    public void setTeachAge(Integer teachAge) {
-        this.teachAge = teachAge;
-    }
-
     /**
      * To-many relationship, resolved on first access (and after reset).
      * Changes to to-many relations are not persisted, make changes to the target entity.
      */
-    @Generated(hash = 439084603)
+    @Generated(hash = 1209150692)
     public List<Student> getStudents() {
         if (students == null) {
             final DaoSession daoSession = this.daoSession;
@@ -111,7 +75,7 @@ public class Teacher {
                 throw new DaoException("Entity is detached from DAO context");
             }
             StudentDao targetDao = daoSession.getStudentDao();
-            List<Student> studentsNew = targetDao._queryTeacher_Students(id);
+            List<Student> studentsNew = targetDao._querySubject_Students(id);
             synchronized (this) {
                 if (students == null) {
                     students = studentsNew;
@@ -164,47 +128,10 @@ public class Teacher {
     }
 
     /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 1349174479)
+    @Generated(hash = 937984622)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getTeacherDao() : null;
+        myDao = daoSession != null ? daoSession.getSubjectDao() : null;
     }
-
-    public String getTag() {
-        return this.tag;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
-    }
-
-    /**
-     * To-many relationship, resolved on first access (and after reset).
-     * Changes to to-many relations are not persisted, make changes to the target entity.
-     */
-    @Generated(hash = 849846811)
-    public List<Score> getScores() {
-        if (scores == null) {
-            final DaoSession daoSession = this.daoSession;
-            if (daoSession == null) {
-                throw new DaoException("Entity is detached from DAO context");
-            }
-            ScoreDao targetDao = daoSession.getScoreDao();
-            List<Score> scoresNew = targetDao._queryTeacher_Scores(tag);
-            synchronized (this) {
-                if (scores == null) {
-                    scores = scoresNew;
-                }
-            }
-        }
-        return scores;
-    }
-
-    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
-    @Generated(hash = 1202883178)
-    public synchronized void resetScores() {
-        scores = null;
-    }
-
 
 }

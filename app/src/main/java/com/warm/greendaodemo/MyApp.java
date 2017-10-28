@@ -36,10 +36,7 @@ public class MyApp extends Application {
     private void setupDb() {
 
         //创建数据库shop.db"
-
-
         MySQLiteOpenHelper helper = new MySQLiteOpenHelper(this, idEncrypt ? "shop_encrypt.db" : "shop.db", null);
-
         //获取可写数据库
         Database db = idEncrypt ? helper.getEncryptedWritableDb(PWD) : helper.getWritableDb();
         //获取数据库对象
