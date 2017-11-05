@@ -1,9 +1,3 @@
----
-title: 报表控件
-date: 2017-06-29 16:11:24
-categories: Android
----
-
 ## GreenDao使用
 
 1. 配置
