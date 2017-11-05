@@ -1,6 +1,7 @@
 package com.warm.greendaodemo.dao.entity;
 
 import com.warm.greendaodemo.dao.gen.DaoSession;
+import com.warm.greendaodemo.dao.gen.ScoreDao;
 import com.warm.greendaodemo.dao.gen.StudentDao;
 import com.warm.greendaodemo.dao.gen.SubjectDao;
 import com.warm.greendaodemo.dao.gen.TeacherDao;
@@ -43,6 +44,9 @@ public class Student {
     //设置id  autoincrement是否自增
     @Id(autoincrement = true)
     private Long id;
+
+    @ToOne(joinProperty = "id")
+    private Score score;
 
     //@Unique 设置成唯一值
     //如果不设置id，可以通过这个设置索引 并设置unique = true 设置成为主键
@@ -93,6 +97,9 @@ public class Student {
 
     @Generated(hash = 155140967)
     private transient Long teacher__resolvedKey;
+
+    @Generated(hash = 1752064941)
+    private transient Long score__resolvedKey;
 
 
     @Generated(hash = 538563793)
@@ -268,5 +275,34 @@ public class Student {
     @Generated(hash = 1744012163)
     public synchronized void resetSubjects() {
         subjects = null;
+    }
+
+    /** To-one relationship, resolved on first access. */
+    @Generated(hash = 503167398)
+    public Score getScore() {
+        Long __key = this.id;
+        if (score__resolvedKey == null || !score__resolvedKey.equals(__key)) {
+            final DaoSession daoSession = this.daoSession;
+            if (daoSession == null) {
+                throw new DaoException("Entity is detached from DAO context");
+            }
+            ScoreDao targetDao = daoSession.getScoreDao();
+            Score scoreNew = targetDao.load(__key);
+            synchronized (this) {
+                score = scoreNew;
+                score__resolvedKey = __key;
+            }
+        }
+        return score;
+    }
+
+    /** called by internal mechanisms, do not call yourself. */
+    @Generated(hash = 1970037880)
+    public void setScore(Score score) {
+        synchronized (this) {
+            this.score = score;
+            id = score == null ? null : score.getId();
+            score__resolvedKey = id;
+        }
     }
 }
